@@ -1,0 +1,49 @@
+# Feature Flag Definitions
+# Controls which capabilities are active and for what % of traffic.
+# Deterministic hash-based assignment — no DB lookup required.
+#
+# Owner: fraud-engineering
+# Last reviewed: 2026-03-25
+
+flags:
+  ml_scoring_enabled:
+    description: "Enable ML anomaly scoring in the decision pipeline"
+    enabled: true
+    rollout_percentage: 100
+    owner: fraud-engineering
+    rationale: "ML v1 graduated from A/B test on 2026-03-01 with +22% fraud catch rate"
+
+  new_velocity_model:
+    description: "Use v2 velocity features (sliding window vs fixed bucket)"
+    enabled: true
+    rollout_percentage: 20
+    owner: fraud-engineering
+    rationale: "Gradual rollout — shadow mode showed 8% improvement in precision"
+
+  strict_geo_check:
+    description: "Increase geo_mismatch score contribution from 30 to 50"
+    enabled: false
+    rollout_percentage: 0
+    owner: fraud-risk-team
+    rationale: "Pending legal review of cross-border transaction policy changes"
+
+  explainability_v2:
+    description: "Return enhanced explainability payload with counterfactual scores"
+    enabled: true
+    rollout_percentage: 50
+    owner: fraud-engineering
+    rationale: "A/B testing richer explanations for analyst workflow improvement"
+
+  async_audit_log:
+    description: "Write audit log asynchronously instead of in the hot path"
+    enabled: true
+    rollout_percentage: 100
+    owner: fraud-engineering
+    rationale: "Reduces p99 latency by ~15ms. Graduated to 100% on 2026-03-10"
+
+  realtime_rule_reload:
+    description: "Allow PUT /rules/reload to hot-reload rules without restart"
+    enabled: true
+    rollout_percentage: 100
+    owner: fraud-engineering
+    rationale: "Core operational capability for rapid response to fraud patterns"

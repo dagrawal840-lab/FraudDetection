@@ -1,0 +1,62 @@
+# A/B Experiment Definitions
+# Each experiment tests a change in the fraud detection pipeline.
+# Assignments are deterministic per user_id + experiment_id.
+#
+# Lifecycle: shadow → 5% → 20% → 50% → 100% → graduated
+# Owner: fraud-engineering
+# Last reviewed: 2026-03-25
+
+experiments:
+  - id: exp_ml_model_v2
+    name: "ML Model v2 vs v1"
+    description: >
+      Tests Isolation Forest v2 (trained on 6-month dataset with new features)
+      against v1 (trained on 3-month dataset). Hypothesis: v2 catches 15% more
+      fraud with no increase in false positive rate.
+    status: active
+    owner: fraud-engineering
+    start_date: "2026-03-01"
+    end_date: "2026-04-01"
+    variants:
+      control:
+        name: "ML Model v1"
+        weight: 0.80
+        model_version: 1
+      treatment:
+        name: "ML Model v2"
+        weight: 0.20
+        model_version: 2
+    primary_metric: fraud_block_rate
+    guardrail_metrics:
+      - false_positive_proxy_rate
+      - p99_decision_latency_ms
+    graduation_criteria:
+      min_sample_size: 10000
+      significance_level: 0.05
+      min_improvement_pct: 10
+
+  - id: exp_blend_weight
+    name: "Rule vs ML Blend Ratio"
+    description: >
+      Tests a higher ML weight (0.5 vs current 0.4) to see if giving the model
+      more influence improves overall detection without increasing manual reviews.
+    status: draft
+    owner: fraud-risk-team
+    start_date: "2026-04-01"
+    end_date: "2026-05-01"
+    variants:
+      control:
+        name: "Rule-heavy (60/40)"
+        weight: 0.50
+        rule_blend_weight: 0.6
+      treatment:
+        name: "Balanced (50/50)"
+        weight: 0.50
+        rule_blend_weight: 0.5
+    primary_metric: fraud_block_rate
+    guardrail_metrics:
+      - false_positive_proxy_rate
+    graduation_criteria:
+      min_sample_size: 5000
+      significance_level: 0.05
+      min_improvement_pct: 5

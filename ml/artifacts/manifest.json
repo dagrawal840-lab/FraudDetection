@@ -1,0 +1,48 @@
+{
+  "models": [
+    {
+      "version": 1,
+      "trained_at": "2026-03-26T00:02:03.758837+00:00",
+      "features": [
+        "amount",
+        "hour_of_day",
+        "tx_count_1h",
+        "tx_count_24h",
+        "avg_amount_30d",
+        "amount_vs_avg_ratio",
+        "is_new_device",
+        "geo_mismatch",
+        "is_high_risk_mcc"
+      ],
+      "hyperparameters": {
+        "n_estimators": 200,
+        "contamination": 0.05,
+        "max_features": 9
+      },
+      "training_samples": 50000,
+      "contamination": 0.05
+    },
+    {
+      "version": 2,
+      "trained_at": "2026-03-26T00:02:12.268071+00:00",
+      "features": [
+        "amount",
+        "hour_of_day",
+        "tx_count_1h",
+        "tx_count_24h",
+        "avg_amount_30d",
+        "amount_vs_avg_ratio",
+        "is_new_device",
+        "geo_mismatch",
+        "is_high_risk_mcc"
+      ],
+      "hyperparameters": {
+        "n_estimators": 200,
+        "contamination": 0.06,
+        "max_features": 9
+      },
+      "training_samples": 50000,
+      "contamination": 0.06
+    }
+  ]
+}

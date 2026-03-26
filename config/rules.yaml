@@ -1,0 +1,98 @@
+# Fraud Detection Rule Engine Configuration
+# Version-controlled here so risk analysts can tune thresholds without a deploy.
+# After editing, call PUT /rules/reload to apply changes live.
+#
+# Owner: fraud-risk-team
+# Last reviewed: 2026-03-25
+
+version: "1.3"
+
+# Verdict thresholds (composite score 0–100)
+thresholds:
+  review: 40    # Score >= 40 → send to human review queue
+  block: 70     # Score >= 70 → auto-block transaction
+
+# Blend weight: proportion of final score from rules vs ML
+# 1.0 = rules only, 0.0 = ML only, 0.6 = 60% rules + 40% ML
+rule_blend_weight: 0.6
+
+rules:
+  - id: high_amount
+    description: "Transaction amount significantly exceeds user's historical average"
+    field: amount
+    operator: gt
+    threshold: 5000
+    score_contribution: 40
+    enabled: true
+    owner: fraud-risk-team
+    rationale: "Large one-off transactions are a primary fraud signal"
+
+  - id: velocity_1h
+    description: "More than 5 transactions in the past 1 hour from same user"
+    field: tx_count_1h
+    operator: gt
+    threshold: 5
+    score_contribution: 35
+    enabled: true
+    owner: fraud-risk-team
+    rationale: "Burst activity indicates account takeover or card testing"
+
+  - id: velocity_24h
+    description: "More than 20 transactions in the past 24 hours from same user"
+    field: tx_count_24h
+    operator: gt
+    threshold: 20
+    score_contribution: 25
+    enabled: true
+    owner: fraud-risk-team
+    rationale: "Sustained high velocity suggests automated fraud"
+
+  - id: new_device
+    description: "Device fingerprint not previously seen for this user"
+    field: is_new_device
+    operator: eq
+    threshold: true
+    score_contribution: 25
+    enabled: true
+    owner: fraud-risk-team
+    rationale: "New device on high-value transaction is a strong fraud indicator"
+
+  - id: geo_mismatch
+    description: "Transaction country differs from user's registered country"
+    field: geo_mismatch
+    operator: eq
+    threshold: true
+    score_contribution: 30
+    enabled: true
+    owner: fraud-risk-team
+    rationale: "Cross-border transactions without prior travel signal are high-risk"
+
+  - id: odd_hour
+    description: "Transaction between midnight and 5am local time"
+    field: hour_of_day
+    operator: between
+    threshold: [0, 5]
+    score_contribution: 15
+    enabled: false
+    owner: fraud-risk-team
+    rationale: "Currently disabled — generates too many false positives for shift workers"
+
+  - id: amount_deviation
+    description: "Transaction amount is more than 3x the user's 30-day average"
+    field: amount_vs_avg_ratio
+    operator: gt
+    threshold: 3.0
+    score_contribution: 20
+    enabled: true
+    owner: fraud-risk-team
+    rationale: "Unusual spend relative to personal baseline"
+
+  - id: high_risk_mcc
+    description: "Merchant category code is in the high-risk MCC list"
+    field: is_high_risk_mcc
+    operator: eq
+    threshold: true
+    score_contribution: 20
+    enabled: true
+    owner: fraud-risk-team
+    rationale: "Certain MCCs (gambling, crypto, wire transfers) have elevated fraud rates"
