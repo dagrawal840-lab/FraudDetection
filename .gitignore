@@ -7,3 +7,8 @@ htmlcov/
 *.db
 .env
 fraud_detection.db
+
+# PaySim data (large files — download locally per data/README.md)
+data/*.csv
+data/*.zip
+data/paysim_results.csv

@@ -26,6 +26,15 @@ format:
 	ruff check --fix app/ ml/ tests/
 	black app/ ml/ tests/
 
+paysim-train:
+	python ml/train_paysim.py --csv data/paysim.csv --version 3 --evaluate
+
+paysim-ingest:
+	python scripts/ingest_paysim.py --csv data/paysim.csv --sample 10000
+
+paysim-ingest-all:
+	python scripts/ingest_paysim.py --csv data/paysim.csv
+
 clean:
 	find . -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
 	find . -name "*.pyc" -delete
@@ -33,3 +42,6 @@ clean:
 
 setup: install train seed
 	@echo "✓ Setup complete. Run 'make run' to start the API."
+
+setup-paysim: install paysim-train seed
+	@echo "✓ PaySim setup complete. Run 'make run' then 'make paysim-ingest'."
