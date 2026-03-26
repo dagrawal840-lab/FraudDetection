@@ -1,0 +1,218 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>Fraud Detection API — Live Demo</title><style>
+  :root{--bg:#0f1117;--surface:#1a1d27;--border:#2a2d3a;--text:#e2e8f0;--muted:#94a3b8;--accent:#6366f1;--green:#10b981;--red:#ef4444;--yellow:#f59e0b;--blue:#3b82f6}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,sans-serif}
+  .container{max-width:1200px;margin:0 auto;padding:2rem}
+  header{border-bottom:1px solid var(--border);padding-bottom:1.5rem;margin-bottom:2rem}
+  h1{font-size:1.75rem;font-weight:700} h1 span{color:var(--accent)}
+  .subtitle{color:var(--muted);margin-top:.4rem;font-size:.95rem}
+  .badge{display:inline-block;padding:.2rem .6rem;border-radius:999px;font-size:.75rem;font-weight:600}
+  .badge-green{background:#052e16;color:var(--green);border:1px solid #14532d}
+  .badge-red{background:#450a0a;color:var(--red);border:1px solid #7f1d1d}
+  .badge-blue{background:#0c1a2e;color:var(--blue);border:1px solid #1e3a5f}
+  .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:2rem}
+  .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;margin-bottom:2rem}
+  @media(max-width:800px){.grid-2,.grid-3{grid-template-columns:1fr}}
+  .card{background:var(--surface);border:1px solid var(--border);border-radius:.75rem;padding:1.25rem}
+  .card-title{font-size:.7rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:.5rem}
+  .card-value{font-size:2rem;font-weight:700} .card-sub{font-size:.8rem;color:var(--muted);margin-top:.25rem}
+  .section{margin-bottom:2.5rem}
+  .section-title{font-size:1.1rem;font-weight:600;margin-bottom:1rem}
+  .verdict-card{background:var(--surface);border:1px solid var(--border);border-radius:.75rem;padding:1.25rem}
+  .verdict-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+  .verdict-label{font-weight:700;font-size:1.5rem}
+  .verdict-label.BLOCK{color:var(--red)} .verdict-label.ALLOW{color:var(--green)} .verdict-label.REVIEW{color:var(--yellow)}
+  .score-bar-container{margin:.6rem 0}
+  .score-label{display:flex;justify-content:space-between;font-size:.8rem;color:var(--muted);margin-bottom:.3rem}
+  .score-bar{height:8px;background:var(--border);border-radius:4px;overflow:hidden}
+  .score-fill{height:100%;border-radius:4px}
+  .score-fill.rule{background:var(--accent)} .score-fill.ml{background:var(--blue)}
+  .score-fill.final-BLOCK{background:var(--red)} .score-fill.final-ALLOW{background:var(--green)} .score-fill.final-REVIEW{background:var(--yellow)}
+  .rule-tag{display:inline-flex;align-items:center;gap:.3rem;background:#1e1b4b;border:1px solid #312e81;border-radius:.4rem;padding:.2rem .5rem;font-size:.75rem;margin:.2rem;color:#a5b4fc}
+  .rule-tag .contrib{color:var(--red);font-weight:600}
+  .tx-meta{font-size:.8rem;color:var(--muted);margin-bottom:.5rem} .tx-meta span{color:var(--text)}
+  pre{background:#0d1117;border:1px solid var(--border);border-radius:.5rem;padding:1rem;overflow-x:auto;font-size:.78rem;line-height:1.6;color:#e6edf3}
+  .tab-bar{display:flex;gap:.25rem;margin-bottom:1rem;border-bottom:1px solid var(--border)}
+  .tab{padding:.5rem 1rem;cursor:pointer;font-size:.85rem;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px;user-select:none}
+  .tab.active{color:var(--accent);border-bottom-color:var(--accent)}
+  .tab-content{display:none} .tab-content.active{display:block}
+  .metric-row{display:flex;justify-content:space-between;align-items:center;padding:.5rem 0;border-bottom:1px solid var(--border);font-size:.875rem}
+  .metric-row:last-child{border-bottom:none} .metric-key{color:var(--muted)} .metric-val{font-weight:600;font-family:monospace}
+  .rule-row{display:flex;justify-content:space-between;align-items:center;padding:.6rem 0;border-bottom:1px solid var(--border);font-size:.85rem}
+  .rule-row:last-child{border-bottom:none} .rule-id{font-family:monospace;color:var(--accent)}
+  .hit-bar{width:80px;height:6px;background:var(--border);border-radius:3px;overflow:hidden;display:inline-block;vertical-align:middle;margin-left:.5rem}
+  .hit-fill{height:100%;background:var(--accent);border-radius:3px}
+  footer{border-top:1px solid var(--border);padding-top:1rem;margin-top:2rem;font-size:.8rem;color:var(--muted);text-align:center}
+</style></head><body><div class="container"><header><h1>Fraud Detection <span>API</span></h1><div class="subtitle">Live data snapshot &nbsp;·&nbsp; ML v2 loaded &nbsp;·&nbsp; 7 rules active &nbsp;·&nbsp; 5 feature flags live</div></header><div class="section"><div class="section-title">📊 KPI Dashboard — 24h Window</div><div class="grid-3"><div class="card"><div class="card-title">Total Evaluated</div><div class="card-value">202</div><div class="card-sub">transactions processed</div></div><div class="card"><div class="card-title">Fraud Block Rate</div><div class="card-value" style="color:var(--red)">8.9%</div><div class="card-sub">18 blocked · target ≥ 0.8%</div></div><div class="card"><div class="card-title">Review Rate</div><div class="card-value" style="color:var(--yellow)">2.0%</div><div class="card-sub">4 in queue · target ≤ 3%</div></div><div class="card"><div class="card-title">p99 Latency</div><div class="card-value" style="color:var(--green)">8ms</div><div class="card-sub">SLO: &lt;200ms ✓</div></div><div class="card"><div class="card-title">Score p90</div><div class="card-value">44.23</div><div class="card-sub">p50: 12.25 · p99: 83.77</div></div><div class="card"><div class="card-title">Allow Rate</div><div class="card-value" style="color:var(--green)">89.1%</div><div class="card-sub">180 allowed through</div></div></div></div><div class="section"><div class="section-title">⚡ Live Evaluation Examples</div><div class="tab-bar" id="verdict-tabs"><div class="tab active" onclick="showVerdict('block',this)">🔴 BLOCK — High Risk</div><div class="tab" onclick="showVerdict('review',this)">🟡 REVIEW — Medium Risk</div><div class="tab" onclick="showVerdict('allow',this)">🟢 ALLOW — Normal</div></div><div id="verdict-block" class="tab-content active"><div class="verdict-card"><div class="verdict-header"><div><div class="tx-meta">txn: <span>txn_fraud_demo</span> &nbsp;·&nbsp; merchant: <span>Wire Transfer</span> &nbsp;·&nbsp; latency: <span>3.44ms</span></div><div class="verdict-label BLOCK">⛔ BLOCK</div></div><div style="text-align:right"><div style="font-size:2.5rem;font-weight:800;color:var(--red)">82.73</div><div style="font-size:.8rem;color:var(--muted)">score / 100</div></div></div><div class="score-bar-container"><div class="score-label"><span>Rule Score</span><span>100.0</span></div><div class="score-bar"><div class="score-fill rule" style="width:100.0%"></div></div></div><div class="score-bar-container"><div class="score-label"><span>ML Score</span><span>56.82</span></div><div class="score-bar"><div class="score-fill ml" style="width:56.82%"></div></div></div><div class="score-bar-container"><div class="score-label"><span>Final (blend 60/40)</span><span>82.73</span></div><div class="score-bar"><div class="score-fill final-BLOCK" style="width:82.73%"></div></div></div><div class="triggered-rules" style="margin-top:.75rem"><span class="rule-tag">high_amount <span class="contrib">+40</span></span><span class="rule-tag">velocity_1h <span class="contrib">+35</span></span><span class="rule-tag">velocity_24h <span class="contrib">+25</span></span><span class="rule-tag">new_device <span class="contrib">+25</span></span><span class="rule-tag">geo_mismatch <span class="contrib">+30</span></span><span class="rule-tag">amount_deviation <span class="contrib">+20</span></span><span class="rule-tag">high_risk_mcc <span class="contrib">+20</span></span></div><div style="margin-top:.75rem;font-size:.8rem;color:var(--muted)">Model v1 &nbsp;·&nbsp; Experiment: none (control)</div></div></div><div id="verdict-review" class="tab-content"><div class="verdict-card"><div class="verdict-header"><div><div class="tx-meta">txn: <span>txn_review_demo</span> &nbsp;·&nbsp; merchant: <span>Best Buy</span> &nbsp;·&nbsp; latency: <span>2.73ms</span></div><div class="verdict-label REVIEW">🔍 REVIEW</div></div><div style="text-align:right"><div style="font-size:2.5rem;font-weight:800;color:var(--yellow)">55.05</div><div style="font-size:.8rem;color:var(--muted)">score / 100</div></div></div><div class="score-bar-container"><div class="score-label"><span>Rule Score</span><span>60.0</span></div><div class="score-bar"><div class="score-fill rule" style="width:60.0%"></div></div></div><div class="score-bar-container"><div class="score-label"><span>ML Score</span><span>47.62</span></div><div class="score-bar"><div class="score-fill ml" style="width:47.62%"></div></div></div><div class="score-bar-container"><div class="score-label"><span>Final (blend 60/40)</span><span>55.05</span></div><div class="score-bar"><div class="score-fill final-REVIEW" style="width:55.05%"></div></div></div><div class="triggered-rules" style="margin-top:.75rem"><span class="rule-tag">high_amount <span class="contrib">+40</span></span><span class="rule-tag">amount_deviation <span class="contrib">+20</span></span></div><div style="margin-top:.75rem;font-size:.8rem;color:var(--muted)">Model v2 &nbsp;·&nbsp; Experiment: exp_ml_model_v2 (treatment)</div></div></div><div id="verdict-allow" class="tab-content"><div class="verdict-card"><div class="verdict-header"><div><div class="tx-meta">txn: <span>txn_normal_demo</span> &nbsp;·&nbsp; merchant: <span>Whole Foods</span> &nbsp;·&nbsp; latency: <span>2.86ms</span></div><div class="verdict-label ALLOW">✅ ALLOW</div></div><div style="text-align:right"><div style="font-size:2.5rem;font-weight:800;color:var(--green)">10.24</div><div style="font-size:.8rem;color:var(--muted)">score / 100</div></div></div><div class="score-bar-container"><div class="score-label"><span>Rule Score</span><span>0.0</span></div><div class="score-bar"><div class="score-fill rule" style="width:0.0%"></div></div></div><div class="score-bar-container"><div class="score-label"><span>ML Score</span><span>25.59</span></div><div class="score-bar"><div class="score-fill ml" style="width:25.59%"></div></div></div><div class="score-bar-container"><div class="score-label"><span>Final (blend 60/40)</span><span>10.24</span></div><div class="score-bar"><div class="score-fill final-ALLOW" style="width:10.24%"></div></div></div><div class="triggered-rules" style="margin-top:.75rem"><span style="color:var(--muted);font-size:.8rem">No rules triggered</span></div><div style="margin-top:.75rem;font-size:.8rem;color:var(--muted)">Model v2 &nbsp;·&nbsp; Experiment: exp_ml_model_v2 (treatment)</div></div></div></div><div class="grid-2"><div class="section" style="margin-bottom:0"><div class="section-title">📋 Active Rules</div><div class="card"><div class="rule-row"><div><span class="rule-id">high_amount</span></div><div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--muted);font-size:.75rem">+40</span><span class="badge badge-green">on</span></div></div><div class="rule-row"><div><span class="rule-id">velocity_1h</span></div><div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--muted);font-size:.75rem">+35</span><span class="badge badge-green">on</span></div></div><div class="rule-row"><div><span class="rule-id">velocity_24h</span></div><div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--muted);font-size:.75rem">+25</span><span class="badge badge-green">on</span></div></div><div class="rule-row"><div><span class="rule-id">new_device</span></div><div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--muted);font-size:.75rem">+25</span><span class="badge badge-green">on</span></div></div><div class="rule-row"><div><span class="rule-id">geo_mismatch</span></div><div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--muted);font-size:.75rem">+30</span><span class="badge badge-green">on</span></div></div><div class="rule-row"><div><span class="rule-id">odd_hour</span></div><div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--muted);font-size:.75rem">+15</span><span class="badge badge-red">off</span></div></div><div class="rule-row"><div><span class="rule-id">amount_deviation</span></div><div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--muted);font-size:.75rem">+20</span><span class="badge badge-green">on</span></div></div><div class="rule-row"><div><span class="rule-id">high_risk_mcc</span></div><div style="display:flex;align-items:center;gap:.5rem"><span style="color:var(--muted);font-size:.75rem">+20</span><span class="badge badge-green">on</span></div></div><div style="margin-top:.75rem;font-size:.8rem;color:var(--muted)">Blend: 60% rules + 40% ML &nbsp;·&nbsp; Review ≥40 &nbsp;·&nbsp; Block ≥70</div></div></div><div class="section" style="margin-bottom:0"><div class="section-title">📈 Rule Hit Rates (24h)</div><div class="card"><div class="rule-row"><span class="rule-id">high_risk_mcc</span><div style="display:flex;align-items:center;gap:.5rem"><div class="hit-bar"><div class="hit-fill" style="width:46.05%"></div></div><span class="rule-contrib" style="color:var(--muted)">15.3%</span></div></div><div class="rule-row"><span class="rule-id">new_device</span><div style="display:flex;align-items:center;gap:.5rem"><div class="hit-bar"><div class="hit-fill" style="width:63.870000000000005%"></div></div><span class="rule-contrib" style="color:var(--muted)">21.3%</span></div></div><div class="rule-row"><span class="rule-id">high_amount</span><div style="display:flex;align-items:center;gap:.5rem"><div class="hit-bar"><div class="hit-fill" style="width:17.82%"></div></div><span class="rule-contrib" style="color:var(--muted)">5.9%</span></div></div><div class="rule-row"><span class="rule-id">velocity_1h</span><div style="display:flex;align-items:center;gap:.5rem"><div class="hit-bar"><div class="hit-fill" style="width:26.73%"></div></div><span class="rule-contrib" style="color:var(--muted)">8.9%</span></div></div><div class="rule-row"><span class="rule-id">velocity_24h</span><div style="display:flex;align-items:center;gap:.5rem"><div class="hit-bar"><div class="hit-fill" style="width:26.73%"></div></div><span class="rule-contrib" style="color:var(--muted)">8.9%</span></div></div><div class="rule-row"><span class="rule-id">geo_mismatch</span><div style="display:flex;align-items:center;gap:.5rem"><div class="hit-bar"><div class="hit-fill" style="width:40.11000000000001%"></div></div><span class="rule-contrib" style="color:var(--muted)">13.4%</span></div></div><div class="rule-row"><span class="rule-id">amount_deviation</span><div style="display:flex;align-items:center;gap:.5rem"><div class="hit-bar"><div class="hit-fill" style="width:26.73%"></div></div><span class="rule-contrib" style="color:var(--muted)">8.9%</span></div></div></div></div></div><div class="section"><div class="section-title">🧪 A/B Experiments</div><div class="grid-2"><div class="card"><div class="card-title">exp_ml_model_v2</div><div style="font-weight:600;margin-bottom:.5rem">ML Model v2 vs v1</div><div style="margin-bottom:.75rem"><span class="badge badge-green">active</span></div><div class="metric-row"><span class="metric-key">ML Model v1</span><span class="metric-val">80%</span></div><div class="metric-row"><span class="metric-key">ML Model v2</span><span class="metric-val">20%</span></div><div style="margin-top:.75rem;font-size:.8rem;color:var(--muted)">Primary metric: fraud_block_rate</div></div><div class="card"><div class="card-title">exp_blend_weight</div><div style="font-weight:600;margin-bottom:.5rem">Rule vs ML Blend Ratio</div><div style="margin-bottom:.75rem"><span class="badge badge-blue">draft</span></div><div class="metric-row"><span class="metric-key">Rule-heavy (60/40)</span><span class="metric-val">50%</span></div><div class="metric-row"><span class="metric-key">Balanced (50/50)</span><span class="metric-val">50%</span></div><div style="margin-top:.75rem;font-size:.8rem;color:var(--muted)">Primary metric: fraud_block_rate</div></div></div></div><div class="section"><div class="section-title">🔌 Raw API Responses</div><div class="tab-bar" id="raw-tabs"><div class="tab active" onclick="showRaw('block',this)">BLOCK verdict</div><div class="tab" onclick="showRaw('allow',this)">ALLOW verdict</div><div class="tab" onclick="showRaw('metrics',this)">KPI Dashboard</div></div><div id="raw-block" class="tab-content active"><pre>{
+  "event_id": "1230c438-a267-45f8-bd6f-b42af5bd6bc3",
+  "transaction_id": "txn_fraud_demo",
+  "user_id": "usr_fraud",
+  "verdict": "BLOCK",
+  "final_score": 82.73,
+  "rule_score": 100.0,
+  "ml_score": 56.82,
+  "rule_blend_weight": 0.6,
+  "review_threshold": 40.0,
+  "block_threshold": 70.0,
+  "triggered_rules": [
+    {
+      "id": "high_amount",
+      "description": "Transaction amount significantly exceeds user's historical average",
+      "score_contribution": 40.0,
+      "field": "amount",
+      "actual_value": 7500.0
+    },
+    {
+      "id": "velocity_1h",
+      "description": "More than 5 transactions in the past 1 hour from same user",
+      "score_contribution": 35.0,
+      "field": "tx_count_1h",
+      "actual_value": 8
+    },
+    {
+      "id": "velocity_24h",
+      "description": "More than 20 transactions in the past 24 hours from same user",
+      "score_contribution": 25.0,
+      "field": "tx_count_24h",
+      "actual_value": 25
+    },
+    {
+      "id": "new_device",
+      "description": "Device fingerprint not previously seen for this user",
+      "score_contribution": 25.0,
+      "field": "is_new_device",
+      "actual_value": true
+    },
+    {
+      "id": "geo_mismatch",
+      "description": "Transaction country differs from user's registered country",
+      "score_contribution": 30.0,
+      "field": "geo_mismatch",
+      "actual_value": true
+    },
+    {
+      "id": "amount_deviation",
+      "description": "Transaction amount is more than 3x the user's 30-day average",
+      "score_contribution": 20.0,
+      "field": "amount_vs_avg_ratio",
+      "actual_value": 30.0
+    },
+    {
+      "id": "high_risk_mcc",
+      "description": "Merchant category code is in the high-risk MCC list",
+      "score_contribution": 20.0,
+      "field": "is_high_risk_mcc",
+      "actual_value": true
+    }
+  ],
+  "model_version": 1,
+  "experiment_id": null,
+  "experiment_variant": "control",
+  "ml_enabled": true,
+  "latency_ms": 3.44
+}</pre></div><div id="raw-allow" class="tab-content"><pre>{
+  "event_id": "076e9ce9-b3f5-4ce6-bcf8-106d8d252575",
+  "transaction_id": "txn_normal_demo",
+  "user_id": "usr_normal",
+  "verdict": "ALLOW",
+  "final_score": 10.24,
+  "rule_score": 0.0,
+  "ml_score": 25.59,
+  "rule_blend_weight": 0.6,
+  "review_threshold": 40.0,
+  "block_threshold": 70.0,
+  "triggered_rules": [],
+  "model_version": 2,
+  "experiment_id": "exp_ml_model_v2",
+  "experiment_variant": "treatment",
+  "ml_enabled": true,
+  "latency_ms": 2.86
+}</pre></div><div id="raw-metrics" class="tab-content"><pre>{
+  "windows": {
+    "1h": {
+      "total_evaluated": 202,
+      "blocked": 18,
+      "reviewed": 4,
+      "allowed": 180,
+      "fraud_block_rate": 0.0891,
+      "review_rate": 0.0198,
+      "avg_final_score": 23.3,
+      "score_percentiles": {
+        "p50": 12.25,
+        "p90": 44.23,
+        "p99": 83.77
+      },
+      "p99_latency_ms": 8.17,
+      "rule_hit_rates": {
+        "high_risk_mcc": 0.1535,
+        "new_device": 0.2129,
+        "high_amount": 0.0594,
+        "velocity_1h": 0.0891,
+        "velocity_24h": 0.0891,
+        "geo_mismatch": 0.1337,
+        "amount_deviation": 0.0891
+      }
+    },
+    "24h": {
+      "total_evaluated": 202,
+      "blocked": 18,
+      "reviewed": 4,
+      "allowed": 180,
+      "fraud_block_rate": 0.0891,
+      "review_rate": 0.0198,
+      "avg_final_score": 23.3,
+      "score_percentiles": {
+        "p50": 12.25,
+        "p90": 44.23,
+        "p99": 83.77
+      },
+      "p99_latency_ms": 8.17,
+      "rule_hit_rates": {
+        "high_risk_mcc": 0.1535,
+        "new_device": 0.2129,
+        "high_amount": 0.0594,
+        "velocity_1h": 0.0891,
+        "velocity_24h": 0.0891,
+        "geo_mismatch": 0.1337,
+        "amount_deviation": 0.0891
+      }
+    },
+    "7d": {
+      "total_evaluated": 202,
+      "blocked": 18,
+      "reviewed": 4,
+      "allowed": 180,
+      "fraud_block_rate": 0.0891,
+      "review_rate": 0.0198,
+      "avg_final_score": 23.3,
+      "score_percentiles": {
+        "p50": 12.25,
+        "p90": 44.23,
+        "p99": 83.77
+      },
+      "p99_latency_ms": 8.17,
+      "rule_hit_rates": {
+        "high_risk_mcc": 0.1535,
+        "new_device": 0.2129,
+        "high_amount": 0.0594,
+        "velocity_1h": 0.0891,
+        "velocity_24h": 0.0891,
+        "geo_mismatch": 0.1337,
+        "amount_deviation": 0.0891
+      }
+    }
+  }
+}</pre></div></div><footer>Fraud Detection API v1.0 &nbsp;·&nbsp; Live data snapshot &nbsp;·&nbsp; 41 tests passing · 85% coverage</footer></div><script>
+function showVerdict(name, el) {
+  document.querySelectorAll('#verdict-tabs .tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('[id^="verdict-"]').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('verdict-'+name).classList.add('active');
+}
+function showRaw(name, el) {
+  document.querySelectorAll('#raw-tabs .tab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('[id^="raw-"]').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  document.getElementById('raw-'+name).classList.add('active');
+}
+</script></body></html>
