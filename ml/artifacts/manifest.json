@@ -2,7 +2,7 @@
   "models": [
     {
       "version": 1,
-      "trained_at": "2026-03-26T00:02:03.758837+00:00",
+      "trained_at": "2026-03-26T00:15:02.052960+00:00",
       "features": [
         "amount",
         "hour_of_day",
