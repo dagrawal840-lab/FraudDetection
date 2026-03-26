@@ -2,6 +2,7 @@
 
 A production-grade fraud detection service combining **rule-based scoring** and **ML anomaly detection**. Built to demonstrate how good product thinking shapes technical architecture — every design decision maps to a product requirement.
 
+Mock is available at https://htmlpreview.github.io/?https://github.com/dagrawal840-lab/FraudDetection/blob/claude/fraud-detection-tool-oeP8C/demo.html
 ---
 
 ## What It Does
